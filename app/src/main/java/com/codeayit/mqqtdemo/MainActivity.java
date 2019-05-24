@@ -4,12 +4,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity implements MQTTService.IGetMessageCallBack {
 
@@ -36,7 +39,10 @@ public class MainActivity extends AppCompatActivity implements MQTTService.IGetM
 
 
     public void publish(View view){
-        MQTTService.publish("topic_in","android mqtt");
+//        MQTTService.publish("topic_in","android mqtt");
+        String msg = "{\"sn\":\""+String.valueOf(Build.SERIAL) +"\",\"time\":1558695239194,\"topic\":\"check_online_client\"}";
+
+        MQTTService.publish("check_online_client",msg);
     }
 
     @Override
@@ -46,6 +52,13 @@ public class MainActivity extends AppCompatActivity implements MQTTService.IGetM
         mqttService = serviceConnection.getMqttService();
         mqttService.toCreateNotification(message);
         Log.i(MQTTService.TAG, message);
+
+        if (message.contains("check_online_server")){
+//        MQTTService.publish("topic_in","android mqtt");
+            String msg = "{\"sn\":\""+String.valueOf(Build.SERIAL) +"\",\"time\":1558695239194,\"topic\":\"check_online_client\"}";
+            MQTTService.publish("check_online_client",msg);
+        }
+
     }
 
     @Override

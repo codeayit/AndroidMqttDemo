@@ -40,7 +40,9 @@ public class MQTTService extends Service {
     private String host = "tcp://www.houluzhai.top:1883";
     private String userName = "lny";
     private String passWord = "lny";
-    private static String myTopic = "topic_out";      //要订阅的主题
+    private static String[] topics = new String[]{"topic_in","check_online_server"};      //要订阅的主题
+
+
     private String clientId = Build.SERIAL;//客户端标识
     private IGetMessageCallBack IGetMessageCallBack;
 
@@ -53,7 +55,7 @@ public class MQTTService extends Service {
     }
 
     public static void publish(String msg) {
-        String topic = myTopic;
+        String topic = topics[0];
         Integer qos = 1;
         Boolean retained = false;
         try {
@@ -111,7 +113,7 @@ public class MQTTService extends Service {
         boolean doConnect = true;
         String message = "{\"terminal_uid\":\"" + clientId + "\"}";
         Log.e(getClass().getName(), "message是:" + message);
-        String topic = myTopic;
+        String topic = topics[0];
         Integer qos = 0;
         Boolean retained = false;
         if ((!message.equals("")) || (!topic.equals(""))) {
@@ -203,7 +205,13 @@ public class MQTTService extends Service {
         public void connectComplete(boolean reconnect, String serverURI) {
             Log.i(TAG, "connectComplete");
             try {
-                client.subscribe(myTopic, 1);
+                int[] qoes =  new int[topics.length];
+                for (int i=0;i<topics.length;i++){
+                    qoes[i] = 1;
+                }
+
+                client.subscribe(topics, qoes);
+
             } catch (MqttException e) {
                 e.printStackTrace();
             }
